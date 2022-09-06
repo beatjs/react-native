@@ -1,0 +1,199 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/.gitignore	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -115,3 +115,6 @@
+ 
+ # Android memory profiler files
+ *.hprof
++
++
++.androidRepo
+Index: ReactAndroid/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ReactAndroid/build.gradle b/ReactAndroid/build.gradle
+--- a/ReactAndroid/build.gradle	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/build.gradle	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -545,6 +545,8 @@
+     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+ }
+ 
++def hycanRNRepoDir = '.androidRepo'
++
+ afterEvaluate {
+     publishing {
+         publications {
+@@ -591,6 +593,18 @@
+                 name = "npm"
+                 url = AAR_OUTPUT_URL
+             }
++
++            maven {
++                name = 'local'
++                url = "${project.rootDir}/${hycanRNRepoDir}"
++            }
++
++            maven {
++                name = 'hycan'
++                allowInsecureProtocol true
++                url "http://maven.gacnio-inc.com/repository/mobile-release/"
++
++            }
+         }
+     }
+ }
+Index: ReactAndroid/gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/ReactAndroid/gradle.properties b/ReactAndroid/gradle.properties
+--- a/ReactAndroid/gradle.properties	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/gradle.properties	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -1,5 +1,5 @@
+-VERSION_NAME=0.67.4
+-GROUP=com.facebook.react
++VERSION_NAME=0.67.4.1
++GROUP=com.facebook.react.hycan
+ 
+ POM_NAME=ReactNative
+ POM_ARTIFACT_ID=react-native
+Index: ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java b/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java
+--- a/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -817,16 +817,20 @@
+     }
+ 
+     private void checkForDeviceOrientationChanges() {
+-      final int rotation =
++      try{
++        final int rotation =
+           ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
+-              .getDefaultDisplay()
+-              .getRotation();
+-      if (mDeviceRotation == rotation) {
+-        return;
+-      }
+-      mDeviceRotation = rotation;
+-      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
+-      emitOrientationChanged(rotation);
++            .getDefaultDisplay()
++            .getRotation();
++        if (mDeviceRotation == rotation) {
++          return;
++        }
++        mDeviceRotation = rotation;
++        DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
++        emitOrientationChanged(rotation);
++      } catch (Exception e){
++        e.printStackTrace();
++      }
+     }
+ 
+     private void checkForDeviceDimensionsChanges() {
+Index: ReactAndroid/src/main/java/com/facebook/react/animated/NativeAnimatedNodesManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/animated/NativeAnimatedNodesManager.java b/ReactAndroid/src/main/java/com/facebook/react/animated/NativeAnimatedNodesManager.java
+--- a/ReactAndroid/src/main/java/com/facebook/react/animated/NativeAnimatedNodesManager.java	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/src/main/java/com/facebook/react/animated/NativeAnimatedNodesManager.java	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -696,6 +696,8 @@
+         // Eat the exception rather than crashing. The impact is that we may drop one or more
+         // frames of the animation.
+         FLog.e(TAG, "Native animation workaround, frame lost as result of race condition", e);
++      } catch (Exception e){
++        e.printStackTrace();
+       }
+       if (nextNode instanceof ValueAnimatedNode) {
+         // Potentially send events to JS when the node's value is updated
+Index: ReactAndroid/src/main/java/com/facebook/react/bridge/JavaMethodWrapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/bridge/JavaMethodWrapper.java b/ReactAndroid/src/main/java/com/facebook/react/bridge/JavaMethodWrapper.java
+--- a/ReactAndroid/src/main/java/com/facebook/react/bridge/JavaMethodWrapper.java	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/src/main/java/com/facebook/react/bridge/JavaMethodWrapper.java	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -10,6 +10,8 @@
+ import static com.facebook.infer.annotation.Assertions.assertNotNull;
+ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+ 
++import android.util.Log;
++
+ import androidx.annotation.Nullable;
+ import com.facebook.debug.holder.PrinterHolder;
+ import com.facebook.debug.tags.ReactDebugOverlayTags;
+@@ -366,6 +368,9 @@
+                     jsArgumentsConsumed, mArgumentExtractors[i].getJSArgumentsNeeded())
+                 + ")",
+             e);
++      } catch (Exception e){
++        Log.e("JavaMethodWrapper","traceName extractArgument on Error" + traceName);
++        e.printStackTrace();
+       }
+ 
+       try {
+Index: ReactAndroid/src/main/java/com/facebook/react/uimanager/FabricViewStateManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/uimanager/FabricViewStateManager.java b/ReactAndroid/src/main/java/com/facebook/react/uimanager/FabricViewStateManager.java
+--- a/ReactAndroid/src/main/java/com/facebook/react/uimanager/FabricViewStateManager.java	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/src/main/java/com/facebook/react/uimanager/FabricViewStateManager.java	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -54,7 +54,7 @@
+     // The caller is responsible for detecting if data is up-to-date, and doing nothing, or
+     // detecting if state is stale and calling setState again.
+     if (stateWrapper == null) {
+-      FLog.e(TAG, "setState called without a StateWrapper");
++//      FLog.e(TAG, "setState called without a StateWrapper");
+       return;
+     }
+     if (stateWrapper != mStateWrapper) {
+Index: ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewGroup.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewGroup.java b/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewGroup.java
+--- a/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewGroup.java	(revision b814d22c08f27e696bc98c2bf934c6bfc4b50d3b)
++++ b/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewGroup.java	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -742,7 +742,9 @@
+     try {
+       dispatchOverflowDraw(canvas);
+       super.dispatchDraw(canvas);
+-    } catch (NullPointerException | StackOverflowError e) {
++    } catch (NullPointerException e) {
++      e.printStackTrace();
++    } catch (StackOverflowError e) {
+       // Adding special exception management for StackOverflowError for logging purposes.
+       // This will be removed in the future.
+       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
+Index: pack.sh
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pack.sh b/pack.sh
+new file mode 100644
+--- /dev/null	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
++++ b/pack.sh	(revision 7287a49e666ef2fe1f0d1b32a7149b553357c786)
+@@ -0,0 +1,4 @@
++yarn
++git apply fix_crash_fix_crash_fix_crash.patch
++gradle :ReactAndroid:publishAllPublicationsToLocalRepository
++#gradle :ReactAndroid:publishAllPublicationsToHycanRepository
