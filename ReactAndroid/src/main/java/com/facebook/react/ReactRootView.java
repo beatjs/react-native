@@ -817,16 +817,20 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void checkForDeviceOrientationChanges() {
-      final int rotation =
+      try{
+        final int rotation =
           ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
-              .getDefaultDisplay()
-              .getRotation();
-      if (mDeviceRotation == rotation) {
-        return;
+            .getDefaultDisplay()
+            .getRotation();
+        if (mDeviceRotation == rotation) {
+          return;
+        }
+        mDeviceRotation = rotation;
+        DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
+        emitOrientationChanged(rotation);
+      } catch (Exception e){
+        e.printStackTrace();
       }
-      mDeviceRotation = rotation;
-      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
-      emitOrientationChanged(rotation);
     }
 
     private void checkForDeviceDimensionsChanges() {

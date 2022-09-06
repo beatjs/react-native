@@ -1,0 +1,4 @@
+yarn
+git apply fix_crash_fix_crash_fix_crash.patch
+gradle :ReactAndroid:publishAllPublicationsToLocalRepository
+#gradle :ReactAndroid:publishAllPublicationsToHycanRepository

@@ -54,7 +54,7 @@ public class FabricViewStateManager {
     // The caller is responsible for detecting if data is up-to-date, and doing nothing, or
     // detecting if state is stale and calling setState again.
     if (stateWrapper == null) {
-      FLog.e(TAG, "setState called without a StateWrapper");
+//      FLog.e(TAG, "setState called without a StateWrapper");
       return;
     }
     if (stateWrapper != mStateWrapper) {

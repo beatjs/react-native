@@ -10,6 +10,8 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -366,6 +368,9 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
                     jsArgumentsConsumed, mArgumentExtractors[i].getJSArgumentsNeeded())
                 + ")",
             e);
+      } catch (Exception e){
+        Log.e("JavaMethodWrapper","traceName extractArgument on Error" + traceName);
+        e.printStackTrace();
       }
 
       try {

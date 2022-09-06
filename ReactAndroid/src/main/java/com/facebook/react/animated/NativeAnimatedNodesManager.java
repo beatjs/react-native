@@ -696,6 +696,8 @@ import java.util.Queue;
         // Eat the exception rather than crashing. The impact is that we may drop one or more
         // frames of the animation.
         FLog.e(TAG, "Native animation workaround, frame lost as result of race condition", e);
+      } catch (Exception e){
+        e.printStackTrace();
       }
       if (nextNode instanceof ValueAnimatedNode) {
         // Potentially send events to JS when the node's value is updated

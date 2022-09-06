@@ -742,7 +742,9 @@ public class ReactViewGroup extends ViewGroup
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
-    } catch (NullPointerException | StackOverflowError e) {
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    } catch (StackOverflowError e) {
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);

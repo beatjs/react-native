@@ -545,6 +545,8 @@ react {
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
+def hycanRNRepoDir = '.androidRepo'
+
 afterEvaluate {
     publishing {
         publications {
@@ -590,6 +592,18 @@ afterEvaluate {
             maven {
                 name = "npm"
                 url = AAR_OUTPUT_URL
+            }
+
+            maven {
+                name = 'local'
+                url = "${project.rootDir}/${hycanRNRepoDir}"
+            }
+
+            maven {
+                name = 'hycan'
+                allowInsecureProtocol true
+                url "http://maven.gacnio-inc.com/repository/mobile-release/"
+
             }
         }
     }
