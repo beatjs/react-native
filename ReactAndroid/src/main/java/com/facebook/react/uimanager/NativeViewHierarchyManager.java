@@ -143,6 +143,8 @@ public class NativeViewHierarchyManager {
       }
     } catch (IllegalViewOperationException e) {
       FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
+    } catch (Exception e){
+      e.printStackTrace();
     }
   }
 
@@ -151,10 +153,13 @@ public class NativeViewHierarchyManager {
       FLog.d(TAG, "updateViewExtraData[%d]: %s", tag, extraData.toString());
     }
     UiThreadUtil.assertOnUiThread();
-
-    ViewManager viewManager = resolveViewManager(tag);
-    View viewToUpdate = resolveView(tag);
-    viewManager.updateExtraData(viewToUpdate, extraData);
+    try{
+      ViewManager viewManager = resolveViewManager(tag);
+      View viewToUpdate = resolveView(tag);
+      viewManager.updateExtraData(viewToUpdate, extraData);
+    } catch (Exception e){
+      e.printStackTrace();
+    }
   }
 
   public synchronized void updateLayout(
